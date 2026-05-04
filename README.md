@@ -1,13 +1,8 @@
 # Riemann
 
-## GitHub configuration
+## Riemann Hypothesis Proof
 
-To set up your new GitHub repository, follow these steps:
+You can find the original paper proof in this link: 
+https://les-mathematiques.net/vanilla/discussion/2342294/hypothese-de-riemann-travaux-complementaire-a-alain-connes/p1?new=1
 
-* Under your repository name, click **Settings**.
-* In the **Actions** section of the sidebar, click "General".
-* Check the box **Allow GitHub Actions to create and approve pull requests**.
-* Click the **Pages** section of the settings sidebar.
-* In the **Source** dropdown menu, select "GitHub Actions".
-
-After following the steps above, you can remove this section from the README file.
+This work is base on Alain Connes Work's.
