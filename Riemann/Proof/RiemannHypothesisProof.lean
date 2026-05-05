@@ -355,7 +355,7 @@ theorem RiemannHypothesis_diracArith_Realisation
     [CompleteSpace ℋ] :
     RiemannHypothesisProp := by
   -- Étape 1 : on choisit l'opérateur de Dirac arithmétique
-  apply RiemannHypothesis_proof (D := diracArith (ℋ := ℋ))
+  apply RiemannHypothesis_proof (D := diracArith)
       (hD_sa := diracArith_isSelfAdjoint)
   -- Étape 3 : identité d'absorption spectrale (seul goal restant)
   · intro f

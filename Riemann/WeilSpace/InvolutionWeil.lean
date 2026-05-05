@@ -2,6 +2,7 @@ import Riemann.Basic
 import Riemann.Tools.HaarMeasure
 import Riemann.WeilSpace.WeilSpace
 import Riemann.Tools.Convolution
+import Riemann.Tools.MellinTransform
 
 /-- **Involution de Weil** : `g*(x) = (1/x) · conj(g(1/x))`.
 
