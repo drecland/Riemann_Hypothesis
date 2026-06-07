@@ -6,17 +6,25 @@ on:
   workflow_dispatch:    # Allows the workflow to be triggered manually via the GitHub interface
 
 jobs:
-  check-for-updates: # Determines which updates to apply.
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      is-update-available: ${{ steps.check-for-updates.outputs.is-update-available }}
-      new-tags: ${{ steps.check-for-updates.outputs.new-tags }}
+    environment: github-pages  # Add this line
+    
     steps:
-      - name: Run the action
-        id: check-for-updates
-        uses: leanprover-community/mathlib-update-action@v1
-        # START CONFIGURATION BLOCK 1
-        # END CONFIGURATION BLOCK 1
+      - uses: actions/checkout@v5
+      - uses: leanprover/lean-action@v1
+      - uses: leanprover-community/docgen-action@v1
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'docs'
+      
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
   do-update: # Runs the upgrade, tests it, and makes a PR/issue/commit.
     runs-on: ubuntu-latest
     permissions:

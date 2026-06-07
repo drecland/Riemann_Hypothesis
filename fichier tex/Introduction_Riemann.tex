@@ -1,0 +1,236 @@
+\documentclass[Riemann_Hypothesis.tex]{subfiles}
+\begin{document}
+
+\pagebreak
+\color{red}
+\part{Introduction}
+\color{black}
+
+The Riemann hypothesis is one of the most famous and oldest open problems 
+in mathematics. Formulated 167 years ago, in 1859, by 
+the German mathematician Bernhard Riemann, it remains to this day 
+at the heart of research in analytic number theory. 
+
+This problem was introduced in the only paper Riemann published on number 
+theory, entitled \textit{Ueber die Anzahl der Primzahlen unter einer gegebenen 
+Grösse} (On the Number of Primes Less Than a Given Magnitude). 
+In this memoir, Riemann sought to understand the distribution of 
+prime numbers and to give an exact expression for the prime counting 
+function, often denoted $\pi(x)$.
+
+To do this, Riemann studied the zeta function, initially introduced 
+by Leonhard Euler for real variables.
+
+\begin{DefNefEn}[label=df:FonctionZetaEuler_en]{Euler-Riemann zeta function}
+    For any complex number $s \in \mathbb{C}$ such that $\Re(s) > 1$, 
+    the zeta function is defined by the series:
+    \begin{equation*}
+        \zeta(s) \;=\; \sum_{n=1}^{+\infty} \frac{1}{n^s}
+    \end{equation*}
+    Euler had already shown that this series could 
+    be expressed as an Eulerian product over the set of 
+    prime numbers $\mathbb{P}$:
+    \begin{equation*}
+        \zeta(s) \;=\; \prod_{p \in \mathbb{P}} \left(1 - p^{-s}\right)^{-1}
+    \end{equation*}
+\end{DefNefEn}
+
+Riemann's major contribution was to extend the domain of definition of 
+this function to the entire complex plane. Through the process of analytic 
+continuation, he showed that the $\zeta$ function could be defined for all 
+$s \in \mathbb{C} \setminus \{1\}$, where it has a simple pole. 
+
+Moreover, Riemann highlighted a functional equation relating $\zeta(s)$ 
+to $\zeta(1-s)$, thus revealing a fundamental symmetry of the function. 
+He identified two types of zeros for this function:
+\begin{itemize}
+    \item The \textbf{trivial zeros}, located at the strictly negative even integers ($-2, -4, -6, \dots$).
+    \item The \textbf{non-trivial zeros}, all of which belong to the critical strip defined by $0 < \Re(s) < 1$.
+\end{itemize}
+
+The Riemann hypothesis states that all these non-trivial zeros 
+have a real part equal to $\frac{1}{2}$.
+
+\begin{theoremEn}[label=th:HypotheseRiemann_en]{Riemann Hypothesis}
+    All non-trivial zeros of the $\zeta$ function have a real part of $\frac{1}{2}$. In other words, for any $s \in \mathbb{C}$ such that $0 < \Re(s) < 1$ and $\zeta(s) = 0$, we have:
+    \begin{equation*}
+        \Re(s) \;=\; \frac{1}{2}
+    \end{equation*}
+\end{theoremEn}
+
+The importance of this conjecture lies in its intimate connection with prime numbers. 
+Riemann indeed proved that the distribution of the non-trivial zeros of the zeta function 
+dictates the fluctuations in the distribution of prime numbers.
+
+Following the foundational work of Riemann, the twentieth century saw 
+the emergence of new approaches to tackle this problem, notably thanks to the 
+major contributions of the French mathematician André Weil. 
+
+In the 1940s, Weil became interested in an analogue of the Riemann hypothesis in 
+the context of algebraic geometry over finite fields. He succeeded in proving 
+the Riemann hypothesis for algebraic curves over finite fields. These results 
+laid the groundwork for the famous Weil conjectures, which were later completely 
+resolved by Pierre Deligne.
+
+Besides this breakthrough in algebraic geometry, 
+the direct contribution of André Weil 
+to classical analytic number theory lies in his generalization of the explicit 
+formulas. Riemann had initially established a formula relating prime numbers 
+to the zeros of the zeta function. In 1952, according to his 
+works (see \cite{weil1952_formules_en}), Weil extended 
+this relationship to a broad class of smooth test functions, 
+revealing a duality between prime powers 
+and the spectrum of non-trivial zeros.
+
+This approach led him to formulate an analytic criterion equivalent 
+to the Riemann hypothesis, known today as the Weil 
+positivity criterion. To state it, we introduce a specific distribution, 
+often called the Weil Hermitian form, acting on an appropriate space of 
+test functions.
+
+\begin{DefNefEn}[label=df:FormeHermitienneWeil_intro]{Weil Hermitian form}
+    Let $\mathcal{W}$ be the space of Weil test functions on the multiplicative 
+    group $\left(\mathbb{R}_+^*, \times\right)$. \par
+    Let $f$ and $g$ be two functions in $\mathcal{W}$. \par
+    We define $g^*$ as the involutive function defined for any $x \in \mathbb{R}_+^*$ by:
+    \begin{equation*}
+        g^*(x) \;=\; \frac{1}{x} \, \overline{g\left(\frac{1}{x}\right)}
+    \end{equation*}
+    We denote by $\Phi = f * g^*$ the multiplicative convolution product of $f$ and $g^*$. \par
+    According to André Weil's explicit formulas, we call 
+    \textbf{Weil Hermitian form}, which we will denote by $\langle f, g \rangle_{\mathcal{HP}}$, the sesquilinear form defined by the action of the geometric distribution on the test function $\Phi$:
+    \begin{equation*}
+        \langle f, g \rangle_{\mathcal{HP}} \;:=\; W_{\text{pol}}(\Phi) - W_{\text{arith}}(\Phi) - W_{\text{arch}}(\Phi)
+    \end{equation*}
+    where the different functionals acting on $\Phi$ are explicitly defined analytically by:
+    \begin{align*}
+        W_{\text{pol}}(\Phi) \;&=\; \mathcal{M}[\Phi](1) + \mathcal{M}[\Phi](0) \\
+        W_{\text{arith}}(\Phi) \;&=\; \sum_{p \in \mathbb{P}} \sum_{n=1}^{\infty} \frac{\ln(p)}{p^{n/2}} \left( \Phi(p^n) + \Phi\left(\frac{1}{p^n}\right) \right) \\
+        W_{\text{arch}}(\Phi) \;&=\; \left( \ln(\pi) + \gamma \right) \Phi(1) + \int_{1}^{\infty} \frac{\Phi(x) + \Phi\left(\frac{1}{x}\right) - 2\Phi(1)}{x - \frac{1}{x}} \, \frac{\mathrm{d}x}{x}
+    \end{align*}
+    with $\mathcal{M}$ denoting the Mellin transform, $\mathbb{P}$ the set of prime numbers and $\gamma$ the Euler-Mascheroni constant.
+\end{DefNefEn}
+
+Based on this definition, Weil demonstrated that the validity of the Riemann conjecture 
+is equivalent to the positivity of a certain global functional form.
+
+\begin{propositionEn}[label=pr:CriterePositiviteWeil_intro]{Weil positivity criterion}
+    Let $\mathcal{Z}$ be the set of non-trivial zeros of
+    the Riemann Zeta function.\par
+    According to André Weil's theorem~\cite{weil1952_formules_en}, 
+    the Hermitian form $\langle \cdot, \cdot \rangle_{\mathcal{HP}}$ 
+    has the following properties: \par
+    For any function $f \in \mathcal{W}$, the evaluation of this form on the
+    diagonal is expressed analytically as a sum over the set
+    $\mathcal{Z}$:
+    \begin{equation*}
+        \langle f, f \rangle_{\mathcal{HP}} \;=\; \sum_{\rho \in \mathcal{Z}} \mathcal{M}[f](\rho) \, \overline{\mathcal{M}[f](1 - \overline{\rho})}
+    \end{equation*}
+    where $\mathcal{M}[f]$ denotes the Mellin transform of the test function $f$. \par
+    Moreover, the Riemann Hypothesis is verified if and only if, for any non-zero 
+    function $f \in \mathcal{W}$, we have:
+    \begin{equation*}
+        \langle f, f \rangle_{\mathcal{HP}} \;\geq\; 0
+    \end{equation*}
+\end{propositionEn}
+
+This result fundamentally transformed the nature of the problem. 
+It allowed translating the Riemann hypothesis into a question of functional 
+analysis and spectral theory. This reformulation inspired numerous 
+attempts at resolution based on the construction of operators 
+whose spectrum would correspond to the zeros of the zeta function, thus 
+joining the Hilbert-Pólya spectral conjecture.\medskip\par
+
+The latter suggests that the imaginary parts of the non-trivial zeros of the Riemann 
+zeta function correspond to the eigenvalues of a self-adjoint operator 
+(a Hamiltonian) acting on a Hilbert space. If such an operator exists, 
+the self-adjoint nature guarantees that its eigenvalues are real, which 
+immediately implies that all the zeros lie on the critical line, 
+thereby proving the Riemann hypothesis.
+
+Subsequently, the French mathematician Alain Connes brought a resolution 
+to this program. Relying on noncommutative geometry, 
+he constructed an adequate space and established a spectral trace formula 
+providing a geometric and spectral realization of the zeros of the zeta function. 
+His work thus provided a concrete framework for the Hilbert-Pólya approach.
+
+In the present document, we will review in detail the development of the 
+explicit formulas and André Weil's Hermitian form. The main objective 
+is to unfold the entirety of the reasoning leading to the proof of the 
+Riemann hypothesis in the sought framework. To do this, 
+we will show that Weil's positivity criterion 
+is indeed satisfied for a specific inner product, of which we will 
+give the explicit form.
+
+This approach is articulated in particular around the two results given 
+by~\ref{lm:EquivalenceFormeWeil_fr} and~\ref{lm:ConstructionMetriqueHP_fr}, 
+which link the Weil distribution to spectral geometry:
+
+\begin{lemmaEn}[label=lm:EquivalenceFormeWeil_intro]{Action of the Weil distribution and spectral equivalence}
+    Let $f$ and $g$ be two functions of the Weil space $\mathcal{W}$. \par
+    Let the Weil distribution $\mathcal{K}_{\Gamma}$ defined on the product $\mathbb{R}_+^* \times \mathbb{R}_+^*$ by the sum of its components (identity, arithmetic and Archimedean):
+    \begin{equation*}
+        \mathcal{K}_{\Gamma}(x,y) \;=\; \delta(x-y) \;-\; \sum_{n=1}^{\infty} \frac{\Lambda(n)}{\sqrt{n}} \left[ \delta\left(x - ny\right) + \delta\left(y - nx\right) \right] \;+\; \mathcal{K}_{\infty}(x,y)
+    \end{equation*}
+    where $\Lambda$ is the von Mangoldt function (Definition~\ref{df:VonMangoldt}), 
+    $\mathcal{K}_{\infty}$ the Archimedean kernel (Definition~\ref{df:NoyauArchimedien}), 
+    and $\delta$ the Dirac distribution 
+    (Definition~\ref{df:DistributionDiracMultiplicative}). \par
+    We define the action of this distribution on the tensor product $f \otimes \overline{g}$ with respect to the invariant multiplicative Haar measure $\frac{\mathrm{d}x}{x}$:
+    \begin{equation*}
+        \langle \mathcal{K}_{\Gamma}, f \otimes \overline{g} \rangle \;:=\; \int_{0}^{\infty} \int_{0}^{\infty} f(x) \overline{g(y)} \, \mathcal{K}_{\Gamma}(x,y) \, \frac{\mathrm{d}x}{x} \frac{\mathrm{d}y}{y}
+    \end{equation*}
+    According to the work of André Weil~\cite{weil1952_formules_en}, this double integral converges absolutely and satisfies the following spectral equality on the set $\mathcal{Z}$ of non-trivial zeros of the Riemann zeta function:
+    \begin{equation*}
+        \langle \mathcal{K}_{\Gamma}, f \otimes \overline{g} \rangle \;=\; \sum_{\rho \in \mathcal{Z}} \mathcal{M}[f](\rho) \, \overline{\mathcal{M}[g](1 - \overline{\rho})}
+    \end{equation*}
+    Consequently, the action of the distribution exactly coincides with the associated
+    Weil sesquilinear form $\langle f, g \rangle_{\mathcal{HP}}$,
+    described in
+    {proposition}~\ref{pr:CriterePositiviteWeil},
+    and which was defined in definition~\ref{df:FormeHermitienneWeil}.
+\end{lemmaEn}
+
+\begin{lemmaEn}[label=lm:ConstructionMetriqueHP_intro]{Hilbert-Pólya structure and Hamiltonian operator}
+    Let $\mathcal{Z}$ be the set of non-trivial zeros of the Riemann zeta function.\par
+    According to {lemma}~\ref{lm:EquivalenceFormeWeil},
+    the action of the Weil bilinear distribution on the space $\mathcal{W}$
+    coincides with the spectral sesquilinear form, which we will
+    denote $\langle \cdot, \cdot \rangle_{\mathcal{HP}}$. \par
+    According to {proposition}~\ref{pr:CriterePositiviteWeil} (Weil's positivity
+    criterion), this Hermitian form satisfies $\langle f, f \rangle_{\mathcal{HP}}
+    \geq 0$ for any function $f \in \mathcal{W}$ if and only if the Riemann
+    hypothesis is verified. \par
+    Under this condition, let $\mathcal{N}$ be the kernel associated with this form
+    (isotropic subspace). \par
+    Since the form $\langle \cdot, \cdot \rangle_{\mathcal{HP}}$ induces a strictly
+    positive definite inner product on the quotient space
+    $\mathcal{W} / \mathcal{N}$, we deduce that the topological completion of this
+    quotient space generates a separable Hilbert space, which we will denote
+    $\mathcal{H}_{HP}$. \par
+    On this Hilbert space $\mathcal{H}_{HP}$, there exists an unbounded
+    spectral Hamiltonian operator, which we will denote $\mathbf{H}$, whose
+    eigenvalues exactly correspond to the imaginary parts of the non-trivial
+    zeros of the zeta function. \par
+    This operator $\mathbf{H}$ is essentially self-adjoint.
+\end{lemmaEn}
+
+The study of this document will conclude with the statement and proof of the following result, 
+which will establish the Riemann hypothesis in {theorem}~\ref{th:ResolutionConjectureHP}:
+
+\begin{theoremEn}[label=th:ResolutionConjectureHP_intro]{Geometric spectral realization and proof of the Riemann Hypothesis}
+    Let $\mathcal{H}$ be a separable Hilbert space and $\mathbf{D}$ an unbounded, self-adjoint operator with compact resolvent on $\mathcal{H}$. \par
+    We assume that the operator $\mathbf{D}$ generates a trace formula satisfying the following spectral absorption identity, for any test function $f \in \mathcal{W}$:
+    \begin{equation*}
+        \mathrm{Tr}_{\mathrm{reg}}\left( f(\mathbf{D}) f^*(\mathbf{D}) \right) \;=\; \mathcal{K}_\Gamma(f * f^*) \;=\; \sum_{\rho \in \mathcal{Z}} \mathcal{M}[f](\rho) \overline{\mathcal{M}[f](1-\bar{\rho})}
+    \end{equation*}
+    where $f^*(x) = \overline{f(x^{-1})} x^{-1}$ is the involution on the multiplicative Schwartz algebra, and $\mathrm{Tr}_{\mathrm{reg}}$ denotes the regularized trace on the Hilbert space $\mathcal{H}$. \par
+    Then, the Hermitian form $\langle \cdot, \cdot \rangle_{\mathcal{HP}}$ is positive or zero on $\mathcal{W}$, and consequently, the Riemann Hypothesis is true.
+\end{theoremEn}
+
+For the hypotheses of the theorem, we will work within a Dixmier 
+ideal so that the regularized trace has the properties necessary 
+for its realization.
+
+
+\end{document}

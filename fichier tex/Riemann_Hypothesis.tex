@@ -1,0 +1,770 @@
+\documentclass[a4paper,12pt]{article}
+
+% --- Packages de base ---
+\usepackage{svg}
+\svgsetup{
+  inkscapelatex=true,
+  svgpath={{/home/drecland/X_autres/cours/autres/SymboleSVG/}},
+  inkscapepath={{/home/drecland/X_autres/cours/autres/SymboleSVG/}},
+}
+% Appels :
+% 
+% --- Paquet pour isoler les tables des matières ---
+\usepackage{titletoc}
+% --- Paquet pour isoler la bibliographie ---
+\usepackage[
+  backend=biber, 
+  style=numeric, % Style d'affichage classique [1], [2]...
+  sorting=none, % Tri par Nom, Année, Titre
+  defernumbers=true % Nécessaire si l'on divise la bibliographie
+  ]{biblatex}
+\addbibresource{biblio_Riemann_en.bib}
+\addbibresource{biblio_Riemann_fr.bib}
+
+\usepackage{fancyhdr} 
+%\includesvg{Mi}  
+%\includesvg{mi}
+
+\usepackage{subfiles}
+
+\usepackage[T1]{fontenc}
+\usepackage{dsfont}
+\usepackage{shorttoc}
+\usepackage{verbatim}
+\usepackage[utf8]{inputenc}
+\usepackage[english, french]{babel}
+\usepackage{mathtools,amsmath,amsfonts,amssymb,amsthm,stmaryrd,amsopn,bm}
+\usepackage{mathrsfs}
+\usepackage{esint}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{
+    hypertexnames=true, % Indispensable pour la gestion fine des ancres
+    colorlinks=true,    % Colorie le texte au lieu de mettre un cadre moche
+    linkcolor=purple,      % Couleur des liens internes (Table des matières, figures...)
+    citecolor=darkgray,    % Couleur des citations [1], [2]...
+    urlcolor=blue     % Couleur des liens externes (Web)
+}
+\usepackage{graphicx}
+\usepackage{bbold}
+\usepackage[french=quotes*]{csquotes}
+\usepackage[margin=2cm]{geometry}
+\usepackage{tikz,pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{shapes.geometric, positioning, decorations.pathmorphing}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{calc} % pour (A |- B)
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable,theorems}
+\usepackage{xparse,etoolbox,varwidth}
+\usepackage{chngcntr}
+\usepackage{braket} % fournit \bra, \ket, \braket, \Set, etc.
+
+\usepackage{array}      % utilitaires de colonnes
+\usepackage{tabularx}   % environnement tabularx
+
+% Colonnes X avec fins de ligne sûres
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+
+% --- DÉFINITION D'UNE COMMANDE ROBUSTE POUR LE GROUPE DE TATE-SHAFAREVICH ---
+%
+% Au lieu d'utiliser le caractère cyrillique Ш, qui peut manquer sur certaines
+% distributions, on définit l'opérateur "Sh" en police droite ("Roman").
+% C'est une notation standard, sans ambiguïté et garantie de fonctionner.
+\DeclareMathOperator{\Sha}{Sh}
+
+% --- Définition de la commande ---
+% On définit la commande \Axiom pour représenter la lettre "A" 
+% en police Fraktur, afin de noter les axiomes méta-mathématiques
+% issus des principes physiques.
+\newcommand{\Axiom}{\mathfrak{A}}
+
+% Définir le style de page pour tout le document
+\pagestyle{fancy}
+
+% --- Configuration du style "fancy" ---
+\fancyhf{} % 1. Effacer tous les champs d'en-tête et de pied de page actuels
+
+% 2. Supprimer la ligne de séparation de l'en-tête
+\renewcommand{\headrulewidth}{0pt} 
+
+% 3. Placer le numéro de page au centre du pied de page
+\cfoot{\thepage} 
+
+\makeatletter
+\renewcommand{\numberline}[1]{\hb@xt@\@tempdima{#1\hfil}\hspace{1.1 em}}
+\makeatother
+
+% --- Titre/auteur ---
+\title{Riemann Hypothesis}
+\author{Côte Léandre Bernard}
+\date{March 2026}
+
+% --- Compteur global des boîtes, remis à zéro à chaque \part ---
+\newcounter{myboxcounter}[part]
+\renewcommand{\themyboxcounter}{\thepart.\arabic{myboxcounter}}
+
+% Discrépance (opérateur en mode math)
+\DeclareMathOperator{\Disc}{Disc}
+
+% (optionnel) version « relative » en minuscule si tu veux l’utiliser
+\DeclareMathOperator{\disc}{disc}
+
+% --- Compteur pour les parties et sous-parties ---
+\renewcommand{\thepart}{\Roman{part}}
+% On remet le compteur section à zéro à chaque \part
+\counterwithin{section}{part}
+% On définit l’affichage d’une section comme "I.1", "II.3", ...
+\renewcommand{\thesection}{\thepart.\arabic{section}}
+% pour les sous-sections: I.1.1, I.1.2, ...
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+
+% --- Intervalles (exemple) ---
+\newcommand{\intervOO}[2]{\mathopen]\,#1\; ;\; #2\,\mathclose[}
+\newcommand{\intervFF}[2]{\mathopen[\,#1\; ;\; #2\,\mathclose]}
+\newcommand{\intervOF}[2]{\mathopen]\,#1\; ;\; #2\,\mathclose]}
+\newcommand{\intervFO}[2]{\mathopen[\,#1\; ;\; #2\,\mathclose[}
+
+% ---Def de fonction ---
+\newcommand{\defapp}[5]{%
+  \begin{alignedat}{2}
+  #1\colon\; & #2 & \longrightarrow & #3\\
+             & #4 & \longmapsto     & #5
+  \end{alignedat}%
+}
+
+% --- COMMANDES DE BASCULEMENT DE LANGUE POUR HYPERREF ---
+% Ces macros réinitialisent les compteurs ET redéfinissent le préfixe
+% des cibles hyperref pour éviter toute collision dans la TOC.
+
+\newcommand{\switchToEnglish}{
+    \cleardoublepage
+    \selectlanguage{english}
+    \setcounter{part}{0}
+    \renewcommand{\theHpart}{en.part.\arabic{part}}
+    \renewcommand{\theHsection}{en.section.\arabic{section}}
+    \renewcommand{\theHsubsection}{en.subsection.\arabic{subsection}}
+    \renewcommand{\theHmyboxcounter}{en.myboxcounter.\arabic{myboxcounter}}
+}
+
+\newcommand{\switchToFrench}{
+    \cleardoublepage
+    \selectlanguage{french}
+    \setcounter{part}{0}
+    \renewcommand{\theHpart}{fr.part.\arabic{part}}
+    \renewcommand{\theHsection}{fr.section.\arabic{section}}
+    \renewcommand{\theHsubsection}{fr.subsection.\arabic{subsection}}
+    \renewcommand{\theHmyboxcounter}{fr.myboxcounter.\arabic{myboxcounter}}
+}
+
+\newcommand{\LanguageTitle}[1]{%
+  \newpage
+  \vspace*{3cm}
+  \begin{center}
+      {\Huge \rmfamily #1 \par}
+  \end{center}
+  \vspace{2cm}
+}
+
+% --- Environnements amsthm simples pour remarque / exemple ---
+\theoremstyle{definition}
+\newtheorem{remarque}{Remarque}[section]
+\newtheorem{example}{Exemple}[section]
+% ========== Styles ==========
+% Cartouche arrondi + positionnement
+\tcbset{
+  titlebadge/.style={
+    enhanced,
+    attach boxed title to top left={xshift=2mm,yshift*=-2mm},
+    varwidth boxed title,
+    % Style de la mini-boîte de titre
+    boxed title style={
+      colback=#1!18!white,
+      colframe=#1!70!black,
+      boxrule=0.5pt,
+      arc=2pt,
+      left=1.2mm,right=1.2mm,top=0.3mm,bottom=0.3mm,
+    },
+    % Style du texte du titre (important !)
+    fonttitle=\bfseries\small,
+    coltitle=black,
+    title after break={}, % pas de répétition après saut de page
+  },
+  baseframe/.style={
+    enhanced jigsaw, breakable,
+    colback=#1!10!white, colframe=#1!70!black,
+    boxrule=0.5pt, arc=2.5pt,
+    left=3mm, right=3mm, top=2mm, bottom=2mm,
+    before skip=8pt, after skip=10pt,
+  },
+  defframe/.style={
+    baseframe=blue,
+    borderline west={1.6pt}{0pt}{blue!80!black},
+    borderline west={0.8pt}{2.2pt}{blue!40!black},
+  },
+  thmframe/.style={baseframe=#1},
+}
+% Espace vertical sous le cartouche (réglable)
+\newlength{\remarqueTitleSep}
+\setlength{\remarqueTitleSep}{2.2mm} 
+% augmente/diminue pour accentuer ou réduire le "détachement"
+
+\tcbset{
+  remarque-col/.store in=\remarquecolor,
+  remarque-col=black!60
+}
+
+% Espace entre cartouche et contenu
+\newlength{\ppTitleSep}
+\setlength{\ppTitleSep}{2mm}
+\newlength{\ppTitleWidth} % largeur mesurée du titre
+
+% Variante robuste sans overlay
+\newtcolorbox{ppboxsimple}[3][]{%
+  enhanced, breakable,
+  colback=#2!4, colframe=#2!65!black,
+  boxrule=0.5pt, arc=2pt,
+  left=4mm, right=3mm, top=2mm, bottom=2mm,
+  borderline west={1.2pt}{0pt}{#2!80!black},
+  attach boxed title to top left={xshift=2mm,yshift*=-2mm},
+  varwidth boxed title,
+  boxed title style={
+    colback=white, colframe=#2!65!black,
+    boxrule=0.5pt, arc=2pt,
+    left=1mm, right=1mm, top=0.2mm, bottom=0.2mm
+  },
+  fonttitle=\bfseries\small,
+  title={#3},
+  before upper=\par\vspace{\ppTitleSep},
+  #1
+}
+%% Variante propre sans overlay qui ne masque rien
+\newtcolorbox{ppbox}[3][]{%
+  enhanced, breakable,
+  colback=#2!4, colframe=#2!65!black,
+  coltitle=#2!75!black,
+  boxrule=0.5pt, arc=2pt,
+  left=4mm, right=3mm, top=2mm, bottom=2mm,
+  borderline west={1.2pt}{0pt}{#2!80!black},
+  attach boxed title to top left={xshift=2mm,yshift*=-2mm},
+  varwidth boxed title,
+  boxed title style={
+    colback=white, colframe=#2!65!black,
+    boxrule=0.5pt, arc=2pt,
+    left=1mm, right=1mm, top=0.2mm, bottom=0.2mm
+  },
+  fonttitle=\bfseries\small,
+  title={#3},
+  before upper=\par\vspace{\ppTitleSep},
+  #1
+}
+% ========== Environnements ==========
+% Chaque env accepte: [options tcolorbox] {titre optionnel}
+% Si le titre optionnel est omis ou vide, on garde le libellé par défaut.
+
+
+\ExplSyntaxOn
+
+% --- Environnements Français ---
+
+\NewDocumentEnvironment{DefNef}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{tcolorbox}[defframe,titlebadge=blue,#1,
+    title = {Définition~\themyboxcounter
+      \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }}}
+  ]
+}{\end{tcolorbox}}
+\NewDocumentEnvironment{theorem}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{ppbox}[#1]{red}{
+    Théorème~\themyboxcounter \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }}
+  }
+}{\end{ppbox}}
+
+\NewDocumentEnvironment{proposition}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{ppbox}[#1]{green}{
+    Proposition~\themyboxcounter \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }
+  }}
+}{\end{ppbox}}
+
+\NewDocumentEnvironment{lemma}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{ppbox}[#1]{orange}{
+    Lemme~\themyboxcounter \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }
+  }}
+}{\end{ppbox}}
+
+\NewDocumentEnvironment{corollaire}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{ppbox}[#1]{magenta}{
+    Corollaire~\themyboxcounter \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }
+  }}
+}{\end{ppbox}} 
+
+% --- Environnements Anglais ---
+
+\NewDocumentEnvironment{DefNefEn}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{tcolorbox}[defframe,titlebadge=blue,#1,
+    title = {Definition~\themyboxcounter
+      \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }}}
+  ]
+}{\end{tcolorbox}}
+
+\NewDocumentEnvironment{theoremEn}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{ppbox}[#1]{red}{
+    Theorem~\themyboxcounter \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }}
+  }
+}{\end{ppbox}}
+
+\NewDocumentEnvironment{propositionEn}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{ppbox}[#1]{green}{
+    Proposition~\themyboxcounter \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }}
+  }
+}{\end{ppbox}}
+
+\NewDocumentEnvironment{lemmaEn}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{ppbox}[#1]{orange}{
+    Lemma~\themyboxcounter \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }}
+  }
+}{\end{ppbox}}
+
+\NewDocumentEnvironment{corollaireEn}{O{} g}{
+  \refstepcounter{myboxcounter}
+  \begin{ppbox}[#1]{magenta}{
+    Corollary~\themyboxcounter \IfNoValueF{#2}{\tl_if_blank:nF {#2} { :~#2 }}
+  }
+}{\end{ppbox}}
+
+\ExplSyntaxOff
+
+% Preuve grisée sans cartouche
+\newtcolorbox{part_proof}[1][]{
+  enhanced jigsaw, breakable,
+  colback=black!5, colframe=black!60,
+  boxrule=0.4pt, arc=2pt,
+  left=4.5mm, right=3mm, top=2mm, bottom=2mm,
+  borderline west={1.6pt}{0pt}{black},
+  before skip=8pt, after skip=10pt,
+  #1
+}
+
+
+% Forcer un nouveau paragraphe (avec petit espace) à chaque début de part_proof
+\AtBeginEnvironment{part_proof}{~\par}%--------------------------
+% Raccourcis usuels
+%--------------------------
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\C}{\mathbb{C}}
+\DeclareMathOperator{\Card}{Card}
+% Opérateurs / ensembles / notations
+\DeclareMathOperator{\Stab}{Stab}
+\DeclareMathOperator{\Orb}{Orb}
+\newcommand{\card}[1]{\left|#1\right|}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\GL}{\mathrm{GL}}
+\newcommand{\norme}[1]{{\left|\left|#1\right|\right|}}
+\newcommand{\Coulomb}{\mathrm{C}}
+\newcommand{\Cote}{\mathfrak{C}}
+\newcommand{\divv}{\operatorname{div}}
+\newcommand{\dashint}{\fint} % intégrale moyennée
+
+\NewDocumentCommand{\cvac}{s o}{
+  \ensuremath{%
+    c\IfBooleanTF{#1}{_{\mathrm{vac}}}{}%
+    \IfNoValueTF{#2}{}{^{#2}}%
+  }%
+}
+
+% --- Notations EM sans collision avec l'échelle \sigma ---
+\newcommand{\cond}{\sigma_{\mathrm c}}   % conductivité électrique (Ohm^{-1} m^{-1})
+\newcommand{\rhos}{\rho_{\mathrm s}}     % densité surfacique de charge (C m^{-2})
+% (on garde \sigma pour l’échelle de ton modèle)
+
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\curl}{\operatorname{curl}}
+
+\DeclareMathOperator{\osc}{osc}
+\DeclareMathOperator{\diam}{diam}
+% --- Opérateurs statistiques ---
+\DeclareMathOperator{\Var}{Var}   % variance : \Var(X), \Var_\sigma(X)
+\DeclareMathOperator{\Cov}{Cov}   % covariance : \Cov(X,Y), \Cov_\mu(X,Y)\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}%
+% Optionnel: une norme cohérente
+% --- Dans le préambule ---
+% Définition sûre de \ket (et variante auto-size \Ket)
+\makeatletter
+\@ifpackageloaded{braket}{}{%
+  \@ifpackageloaded{physics}{}{%
+    % version standard (taille fixe)
+    \newcommand{\ket}[1]{\lvert #1 \rangle}
+    % version auto-size (délimiteurs extensibles)
+    \newcommand{\Ket}[1]{\left\lvert #1 \right\rangle}
+    \newcommand{\bra}[1]{\langle #1 \rvert}
+    \newcommand{\Bra}[1]{\left\langle #1 \right\rvert}
+  }%
+}
+\makeatother
+\DeclareRobustCommand{\dd}{\mathop{}!\mathrm{d}}
+
+% --------- Formatage des nombres PGF ----------
+\pgfkeys{/pgf/number format/.cd,
+  assume math mode=true,
+  set thousands separator={\,},
+  set decimal separator={.}
+}
+\newcommand{\Sci}[2][]{\pgfmathprintnumber[sci,sci precision=2,#1]{#2}}
+\newcommand{\SciTen}[2][]{\pgfmathprintnumber[sci,sci precision=2,
+  sci generic={mantissa\times10^{exponent}},#1]{#2}}% Styles globaux (attention: pas d'espace avant '/.style')
+\tikzset{
+  ptlept/.style={circle,fill=blue!70,draw=blue!70,minimum size=3pt,inner sep=0pt},
+  ptqup/.style ={circle,fill=red!70, draw=red!70, minimum size=3pt,inner sep=0pt},
+  ptqdn/.style ={circle,fill=orange!75!black,draw=orange!75!black,minimum size=3pt,inner sep=0pt},
+  ptbos/.style ={diamond,fill=purple!70,draw=purple!70,minimum size=4pt,inner sep=0.6pt},
+  ptsca/.style ={regular polygon,regular polygon sides=4,fill=green!60!black,draw=green!60!black,
+                 minimum size=4pt,inner sep=0.6pt},
+  pthad/.style ={circle,fill=black,draw=black,minimum size=3pt,inner sep=0pt},
+  note/.style   ={font=\scriptsize,align=left}
+}
+
+% Macros de nom
+\newcommand{\PSigmaFull}{particule supraluminique à échelle $\sigma$}
+\newcommand{\PSigma}{\text{$\sigma$-particule}}
+\newcommand{\PSigmas}{\text{$\sigma$-particules}}
+
+% (Rappels de centre/ rayon RMS déjà utilisés)
+\newcommand{\CM}[1]{X[#1]}
+\newcommand{\RQ}[1]{R[#1]}
+\newcommand{\DefCentreRayon}{
+\begin{equation*}
+\CM{u}(t) \;:=\; \frac{\displaystyle\int_{\mathbb{R}} x\,|u(t,x)|^2\,\mathrm{d}x}{\displaystyle\int_{\mathbb{R}} |u(t,x)|^2\,\mathrm{d}x},
+\qquad
+\RQ{u}(t) \;:=\; \left(\frac{\displaystyle\int_{\mathbb{R}} (x-\CM{u}(t))^2\,|u(t,x)|^2\,\mathrm{d}x}{\displaystyle\int_{\mathbb{R}} |u(t,x)|^2\,\mathrm{d}x}\right)^{\!1/2}.
+\end{equation*}
+}
+% \varrho = constante de causalité du fond
+\newcommand{\varrhoFond}{\varrho}
+% \Id  -> I droit pour l'identité ; arguments optionnels : indice, exposant
+% Exemples :  \Id           (I)
+%             \Id[n]        (I_n)
+%             \Id[V][W]     (I_V^{W})
+\NewDocumentCommand{\Id}{oo}{%
+  \mathrm{I}%
+  \IfNoValueF{#1}{_{#1}}%
+  \IfNoValueF{#2}{^{#2}}%
+}
+
+% Variante "nom d'opérateur" : Id (utile pour les applications identités)
+% Exemple :  \Idop_{V} : V \to V
+\DeclareMathOperator{\Idop}{Id}
+
+% (Optionnel) Identité tensorielle (police sans serif) : \Idten, avec éventuel indice
+% Exemple : \Idten[2] pour l'identité d’ordre 2
+\NewDocumentCommand{\Idten}{o}{\mathsf{I}\IfNoValueF{#1}{_{#1}}}
+% -----------------------------------------------------------------------
+
+%==== Raccourcis pour alléger les cellules ====
+\newcommand{\Cloc}{\mathcal{C}^{\rm loc}_{{\rm ref},\sigma}}
+\newcommand{\Cball}[1]{\mathcal{C}^{\rm ball}_{{\rm ref},\,#1}}
+\newcommand{\CrefV}{\mathcal{C}_{\rm ref}(t;V)}
+\newcommand{\Vminus}{V^{\ominus \sigma}}
+\newcommand{\Vplus}{V^{\oplus \sigma}}
+
+\newcommand{\Sym}{\mathbb{S}}
+
+% (Optionnel) Raccourcis utiles :
+% \Symd{d}   -> \mathbb{S}_d
+% \SPD{d}    -> \mathbb{S}_d^{++} (définies positives)
+% \SPSD{d}   -> \mathbb{S}_d^{+}  (semi-définies positives)
+\newcommand{\Symd}[1]{\mathbb{S}_{#1}}
+\newcommand{\SPD}[1]{\mathbb{S}_{#1}^{++}}
+\newcommand{\SPSD}[1]{\mathbb{S}_{#1}^{+}}
+\newcommand{\V}{\mathcal{V}}
+% --- Hyperbolic cosecant operator (\csch) -------------------------------
+\makeatletter
+\@ifpackageloaded{amsmath}{}{\usepackage{amsmath}}
+\@ifundefined{csch}{\DeclareMathOperator{\csch}{csch}}{}
+% (optionnel) : activer aussi \sech si non défini
+\@ifundefined{sech}{\DeclareMathOperator{\sech}{sech}}{}
+\makeatother
+
+% --- Commande \slashed (robuste et sans conflit) ---------------------------
+\makeatletter
+% 1) Si le package 'slashed' est présent, on l'utilise (qualité typographique optimale).
+\@ifpackageloaded{slashed}{}{%
+  \IfFileExists{slashed.sty}{\RequirePackage{slashed}}{}%
+}
+% 2) Si \slashed n'est toujours pas défini, on fournit un fallback minimal propre.
+\@ifundefined{slashed}{%
+  \DeclareRobustCommand{\slashed}[1]{%
+    \mathchoice
+      {\ooalign{$\hfil\displaystyle #1\hfil$\cr\hfil\raise0.15ex\hbox{$\displaystyle/$}\hfil\cr}}
+      {\ooalign{$\hfil\textstyle     #1\hfil$\cr\hfil\raise0.15ex\hbox{$\textstyle/$}\hfil\cr}}
+      {\ooalign{$\hfil\scriptstyle   #1\hfil$\cr\hfil\raise0.10ex\hbox{$\scriptstyle/$}\hfil\cr}}
+      {\ooalign{$\hfil\scriptscriptstyle #1\hfil$\cr\hfil\raise0.07ex\hbox{$\scriptscriptstyle/$}\hfil\cr}}%
+  }%
+}{}
+% 3) Raccourcis usuels (facultatifs, ne s'installent que s'ils n'existent pas déjà).
+\providecommand{\Dslash}{\slashed{D}}
+\providecommand{\Aslash}{\slashed{A}}
+\providecommand{\pslash}{\slashed{p}}
+\providecommand{\kslash}{\slashed{k}}
+\providecommand{\partialslash}{\slashed{\partial}}
+\makeatother
+
+%===================================================================
+%Pour meca fluide
+%===================================================================
+%===================== Préambule : commande pour \Sdev =====================%
+% Symbole pour la partie déviatorique du tenseur des contraintes S
+% (à placer dans le préambule, après amsmath)
+\makeatletter
+\DeclareRobustCommand{\Sdev}{\ensuremath{\mathring{\mathrm{S}}}}
+% Variante (aspect un peu différent) :
+% \DeclareRobustCommand{\Sdev}{\ensuremath{\stackrel{\circ}{\mathrm{S}}}}
+\makeatother
+%===========================================================================%
+% --- PRÉAMBULE : symbole de restriction de mesure ---
+% \mres s’utilise comme opérateur binaire :  \mu \mres E
+% Version robuste aux tailles (display, text, script, scriptscript)
+\newcommand{\mres}{\mathbin{\mathchoice
+  {\vrule height 1.6ex depth 0pt width 0.13ex\mkern-0.35mu\vrule height 0.13ex depth 0pt width 1.30ex}%
+  {\vrule height 1.6ex depth 0pt width 0.13ex\mkern-0.35mu\vrule height 0.13ex depth 0pt width 1.30ex}%
+  {\vrule height 1.2ex depth 0pt width 0.11ex\mkern-0.25mu\vrule height 0.11ex depth 0pt width 1.00ex}%
+  {\vrule height 0.9ex depth 0pt width 0.09ex\mkern-0.20mu\vrule height 0.09ex depth 0pt width 0.80ex}%
+}}
+
+
+% Symbole de l’opérateur (à utiliser comme \Dd u)
+\newcommand{\Dd}{\mathrm{D}}
+
+% Développement explicite de la partie symétrique du gradient
+\NewDocumentCommand{\symgrad}{m}{
+  \frac{1}{2}\big(\nabla #1 + (\nabla #1)^\top\big)
+}
+
+% Préambule — alias pour la "lettre grecque" Tau majuscule
+% (en pratique : un T, dont le style est contrôlable en un seul endroit)
+\providecommand{\Tau}{T}            % choix par défaut (italique mathématique)
+
+% Variantes de style (décommenter exactement une ligne si souhaité) :
+% \renewcommand{\Tau}{\mathrm{T}}    % droit (upright), utile pour un paramètre "temps"
+% \renewcommand{\Tau}{\mathcal{T}}   % calligraphique
+% \renewcommand{\Tau}{\mathsf{T}}    % sans-serif
+
+\newcommand{\compact}{\Subset} 
+
+
+\begin{document}
+\maketitle
+
+% =======================================================
+% ZONE EN ANGLAIS
+% =======================================================
+\switchToEnglish%
+\begin{refsection}[biblio_Riemann_en.bib]
+   \LanguageTitle{Riemann Hypothesis \\ English Part}
+
+    % Début de la collecte pour la table des matières anglaise
+    \startcontents[english]
+    
+    \section*{Summary}
+    % Premier affichage partiel : profondeur 1 (Parties et Sections uniquement)
+    \printcontents[english]{l}{0}{\setcounter{tocdepth}{1}}
+    \vspace{1cm}
+
+    % Inclusion des sous-fichiers anglais
+    \subfile{Introduction_Riemann.tex}
+    \subfile{Simple_Conjtecture_Resolution.tex}
+
+    \pagebreak
+    \color{red}
+    \part{Bibliography}
+    \color{black}
+
+    \printbibliography[
+      keyword= schwartz,
+      heading=subbibliography,
+      title = {Works related to Laurent Schwartz}
+    ]
+
+    \printbibliography[
+      keyword= weil,
+      heading=subbibliography,
+      title= {Works related to André Weil}
+    ]
+
+    \printbibliography[
+      keyword= bourbaki,
+      heading=subbibliography,
+      title= {Works related to the Haar measure}
+    ]
+
+    \printbibliography[
+      keyword= mellin,
+      heading=subbibliography,
+      title= {Works related to the Mellin transform}
+    ]
+
+    \printbibliography[
+      keyword= lebesgue,
+      heading=subbibliography,
+      title= {Works related to Henri Lebesgue}
+    ]
+
+    \printbibliography[
+      keyword = tenenbaum,
+      heading=subbibliography,
+      title = {Works related to von Mangoldt and Möbius}
+    ]
+
+    \printbibliography[
+      keyword = connes,
+      heading=subbibliography,
+      title = {Works related to Alain Connes}
+    ]
+
+    \printbibliography[
+      keyword = von-neumann,
+      heading=subbibliography,
+      title = {Works related to John von Neumann}
+    ]
+
+    \printbibliography[
+      keyword = kato,
+      heading=subbibliography,
+      title = {Works related to Tosio Kato}
+    ]
+
+    \printbibliography[
+      keyword = dixmier
+      heading=subbibliography,
+      title = {Works related to Jacques Dixmier}
+    ]
+
+    \newpage
+    \color{red}
+    \section*{Complete Table of Contents}
+    \color{black}
+    % Second affichage complet : profondeur 3 (jusqu'aux sous-sous-sections)
+    \printcontents[english]{l}{0}{\setcounter{tocdepth}{3}}
+    \vspace{1cm}
+
+    % Interruption de la collecte
+    \stopcontents[english]
+
+\end{refsection}
+
+\newpage
+% =======================================================
+% ZONE EN FRANÇAIS
+% =======================================================
+\switchToFrench
+\begin{refsection}[biblio_Riemann_fr.bib] 
+  \LanguageTitle{Riemann Hypothesis \\ Partie en Français}
+
+    % Début de la collecte pour la table des matières française
+    \startcontents[french]
+
+    
+    \section*{Sommaire}
+    % Premier affichage partiel : profondeur 1 (Parties et Sections uniquement)
+    \printcontents[french]{l}{0}{\setcounter{tocdepth}{1}}
+    \vspace{1cm}
+
+    % Inclusion des sous-fichiers français
+    \subfile{Intro_FR.tex}
+    \subfile{Simple_Conjecture_fr.tex}
+    
+    
+    \pagebreak
+    \color{red}
+    \part{Bibliographie}
+    \color{black}
+
+    \printbibliography[
+      keyword= schwartz,
+      heading=subbibliography,
+      title = {Travaux relatifs à Laurent Schwartz}
+    ]
+
+    \printbibliography[
+      keyword= weil,
+      heading=subbibliography,
+      title= {Travaux relatifs à André Weil}
+    ]
+
+    \printbibliography[
+      keyword= bourbaki,
+      heading=subbibliography,
+      title= {Travaux relatifs à la mesure de Haar}
+    ]
+
+    \printbibliography[
+      keyword= mellin,
+      heading=subbibliography,
+      title= {Travaux relatifs à la transformée de Mellin}
+    ]
+
+    \printbibliography[
+      keyword= lebesgue,
+      heading=subbibliography,
+      title= {Travaux relatifs à Henri Lebesgue}
+    ]
+
+    \printbibliography[
+      keyword = tenenbaum,
+      heading=subbibliography,
+      title = {Travaux relatifs à von-Manglot et Möbius }
+    ]
+
+    \printbibliography[
+      keyword = connes,
+      heading=subbibliography,
+      title = {Travaux relatifs à Alain Connes}
+    ]
+
+    \printbibliography[
+      keyword = von-neumann,
+      heading=subbibliography,
+      title = {Travaux relatifs à John von Neumann}
+    ]
+
+    \printbibliography[
+      keyword = kato,
+      heading=subbibliography,
+      title = {Travaux relatifs à Tosio Kato}
+    ]
+
+    \printbibliography[
+      keyword = dixmier
+      heading=subbibliography,
+      title = {Travaux relatifs à Jacques Dixmier}
+    ]
+
+
+    \newpage
+    \color{red}
+    \section*{Table des matières complète}
+    \color{black}
+    % Second affichage complet : profondeur 3 (jusqu'aux sous-sous-sections)
+    \printcontents[french]{l}{0}{\setcounter{tocdepth}{3}}
+    \vspace{1cm}
+
+
+    % Interruption de la collecte
+    \stopcontents[french]
+  
+\end{refsection}
+
+\end{document}

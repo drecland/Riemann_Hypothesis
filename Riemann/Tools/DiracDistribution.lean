@@ -183,11 +183,18 @@ lemma diracArith_hasCompactResolvent
     (diracArith).HasCompactResolvent := by
   sorry
 
-/-- **Famille de vecteurs propres** indexée par `𝒵`. -/
-noncomputable def diracEigenvector
-    (ρ : {z : ℂ // z ∈ (𝒵 : Set ℂ)}) : ℋ := sorry
+/-- **Famille de vecteurs propres** indexée par `𝒵`.
+**Vecteur propre dans DiracHilbert** : le vecteur de base
+δ_ρ indexé par le zéro ρ -/
+noncomputable def diracEigenvector_diag
+    (ρ : {z : ℂ // z ∈ (𝒵 : Set ℂ)}) : DiracHilbert :=
+  lp.single 2 ⟨ρ.val, ρ.property⟩ (1 : ℂ)
+  -- ← Retourne un élément de ℓ²(𝒵)
 
-/-- **Lemme 4.0** : `ψ_ρ` est non nul (vecteur propre de `D`). -/
-lemma diracEigenvector_ne_zero
-    (ρ : {z : ℂ // z ∈ (𝒵 : Set ℂ)}) :
-    diracEigenvector (ℋ := ℋ) ρ ≠ 0 := sorry
+/-- **Version générique** pour compatibilité avec ℋ quelconque -/
+noncomputable def diracEigenvector
+    (ℋ : Type u_1)
+    [NormedAddCommGroup ℋ]
+    [InnerProductSpace ℂ ℋ]
+    [CompleteSpace ℋ]
+    (ρ : {z : ℂ // z ∈ (𝒵 : Set ℂ)}) : ℋ := sorry
