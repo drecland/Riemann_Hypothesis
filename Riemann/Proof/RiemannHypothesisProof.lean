@@ -12,6 +12,7 @@ import Riemann.WeilSpace.WeilTimesSchwartz
 import Riemann.Proof.MacaevIdeal
 import Riemann.Proof.PositiveOperator
 import Riemann.Proof.DixmierTrace
+import Riemann.Proof.ConnesTraceFormula
 
 
 
@@ -186,37 +187,6 @@ lemma positiveOp_singularValues_cesaroBound
   rw [one_div]
   rw [inv_mul_le_iff₀ hlog_pos]
   linarith [h, mul_comm K (Real.log N)]
-
-
-
-/-- Compacité de `f(D)f*(D)` pour `f ∈ 𝒲` et `D` auto-adjoint.
-
-    Schéma de preuve :
-    1. Par isSelfAdjoint_hasCompactResolvent, D a une résolvante compacte.
-    2. Le calcul fonctionnel borélien donne f(D) borné.
-    3. f ∈ 𝒲 → ℳ[f] à décroissance rapide → f(D) compact
-       (les valeurs propres ℳ[f](λ_n) → 0 car λ_n → ∞).
-    4. Composition d'un compact avec un borné → compact. -/
-lemma positiveOp_isCompact
-    {ℋ : Type*} [NormedAddCommGroup ℋ] [InnerProductSpace ℂ ℋ] [CompleteSpace ℋ]
-    (f : 𝒲) (D : UnboundedOperator ℋ) (hD_sa : D.IsSelfAdjoint) :
-    IsCompactOperator (positiveOp f D hD_sa) := by
-  -- Étape 1 : récupérer la résolvante compacte
-  have hD_cr : D.HasCompactResolvent :=
-    isSelfAdjoint_hasCompactResolvent D hD_sa
-  -- Étape 2 : f(D) est compact car ℳ[f](λ_n) → 0
-  have hfD_compact : IsCompactOperator
-      (WeilFunctionalCalculus f D hD_sa) := by
-    sorry
-  -- Étape 3 : f*(D) = (f(D))* est aussi compact
-  -- have hfstarD_compact : IsCompactOperator
-  -- (WeilFunctionalCalculus (weilStarW f) D hD_sa) := by
-    -- rw [adjoint_of_weilFC f D hD_sa]
-    -- TODO: utiliser que l'adjoint d'un compact est compact
-  -- Étape 4 : produit f(D) · f*(D) est compact
-  -- unfold positiveOp
-  -- TODO: utiliser que compact ∘ borné = compact
-  sorry
 
 
 /-- **Lemme** — Pour toute `f ∈ 𝒲` et tout opérateur auto-adjoint

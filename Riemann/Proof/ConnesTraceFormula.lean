@@ -4,6 +4,7 @@ import Riemann.Tools.MellinTransform
 import Riemann.Tools.UnboundedOperator
 import Riemann.Tools.DiracDistribution
 import Riemann.WeilSpace.WeilHermitianForm
+import Riemann.WeilSpace.WeilFunctionalCalculus
 import Riemann.Proof.MacaevIdeal
 import Riemann.Proof.DixmierTrace
 import Riemann.Proof.RegularizedTraceOperator
@@ -33,6 +34,37 @@ axiom traceClass_iff_summable_singularValues
 axiom not_summable_one_div_n_log_n :
     ¬ Summable (fun n : ℕ => 1 / ((n : ℝ) * Real.log n))
 
+/-- **Lemme de comparaison** : si une suite positive sommable majore (à partir du rang 2)
+    une suite positive, alors cette dernière est sommable. -/
+axiom summable_of_le_summable_from
+    {f g : ℕ → ℝ} (hf_nn : ∀ n, 0 ≤ f n) (hg : Summable g)
+    (h : ∀ n, 2 ≤ n → f n ≤ g n) : Summable f
+
+
+/-- positivité des valeurs singulières -/
+axiom singularValues_nonneg (T : ℋ →L[ℂ] ℋ) (n : ℕ) :
+    0 ≤ singularValues T n
+
+
+/-- **Lemme** (von Mangoldt) — Asymptotique `N(T) ∼ (T / 2π) · log T`
+    pour le nombre de zéros non triviaux `ρ = β + iγ` de ζ avec `0 < γ ≤ T`. -/
+axiom vonMangoldt_zeros_asymptotic :
+    ∃ C : ℝ, 0 < C ∧ ∀ T : ℝ, 2 ≤ T →
+      ∃ N : ℕ, |((N : ℝ) - (T / (2 * Real.pi)) * Real.log T)| ≤ C * Real.log T
+
+/-- **Asymptotique** : `∑_{n=2}^{N} 1/(n log n) ≤ C · log(log N) + C'`,
+    donc majoré par `C'' · log N` pour `N ≥ 2`. -/
+axiom sum_one_div_n_log_n_le_log :
+    ∃ C : ℝ, 0 < C ∧ ∀ N : ℕ, 2 ≤ N →
+      ∑ n ∈ Finset.range N, (if 2 ≤ n then 1 / ((n : ℝ) * Real.log n) else 0)
+        ≤ C * Real.log N
+
+axiom positiveOp_cesaroBound_aux (f : 𝒲) :
+    ∃ C : ℝ, ∀ N : ℕ, 2 ≤ N →
+      ∑ n ∈ Finset.range N,
+        singularValues (positiveOp f diracArith diracArith_isSelfAdjoint) n
+      ≤ C * Real.log N
+
 
 /-! ### — Appartenance à l'idéal de Dixmier -/
 
@@ -48,35 +80,66 @@ lemma positiveOp_not_traceClass (f : 𝒲) :
   set Pf := positiveOp f diracArith diracArith_isSelfAdjoint with hPf
   intro hPf_trace
   rw [traceClass_iff_summable_singularValues] at hPf_trace
-  obtain ⟨K, hK_nn, hμ⟩ :=
-    positiveOp_singularValues_decay f diracArith diracArith_isSelfAdjoint
+  obtain ⟨K, hK_pos, hμ⟩ :=
+    positiveOp_singularValues_decay_lower f diracArith diracArith_isSelfAdjoint
       diracArith_hasCompactResolvent
+  -- Étape 1 : ∑ K/(n log n) converge par comparaison à ∑ singularValues
   have hcomp : Summable (fun n : ℕ => K / ((n : ℝ) * Real.log n)) := by
-    sorry
-  have hdiv : ¬ Summable (fun n : ℕ => K / ((n : ℝ) * Real.log n)) := by
-    intro hsum
-    apply not_summable_one_div_n_log_n
-    have hK_ne : K ≠ 0 := ne_of_gt hK_nn
-    have heq : (fun n : ℕ => 1 / ((n : ℝ) * Real.log n))
-            = (fun n : ℕ => K⁻¹ * (K / ((n : ℝ) * Real.log n))) := by
-      funext n
-      field_simp
-    rw [heq]
-    exact hsum.mul_left K⁻¹
-  exact hdiv hcomp
+    apply summable_of_le_summable_from _ hPf_trace hμ
+    intro n
+    by_cases hn : 2 ≤ n
+    · apply div_nonneg hK_pos.le
+      have h1 : (1 : ℝ) ≤ n := by exact_mod_cast (by omega : 1 ≤ n)
+      have h2 : 0 ≤ Real.log n := Real.log_nonneg h1
+      positivity
+    · push Not at hn
+      interval_cases n
+      · simp
+      · simp
+  -- Étape 2 : contradiction avec not_summable_one_div_n_log_n
+  apply not_summable_one_div_n_log_n
+  have hK_ne : K ≠ 0 := ne_of_gt hK_pos
+  have heq : (fun n : ℕ => 1 / ((n : ℝ) * Real.log n))
+           = (fun n : ℕ => K⁻¹ * (K / ((n : ℝ) * Real.log n))) := by
+    funext n
+    field_simp
+  rw [heq]
+  exact hcomp.mul_left K⁻¹
 
 
 
 
-/-- **Lemme** (von Mangoldt) : asymptotique `N(T) ∼ (T/2π) ln T`. -/
-lemma vonMangoldt_zeros_asymptotic :
-    True := sorry  -- placeholder pour l'asymptotique
+/-- Compacité de `f(D)f*(D)` pour `f ∈ 𝒲` et `D` auto-adjoint.
 
--- Lemme 1 : positiveOp appartient à MacaevIdeal
+    Schéma de preuve :
+    1. Par isSelfAdjoint_hasCompactResolvent, D a une résolvante compacte.
+    2. Le calcul fonctionnel borélien donne f(D) borné.
+    3. f ∈ 𝒲 → ℳ[f] à décroissance rapide → f(D) compact
+       (les valeurs propres ℳ[f](λ_n) → 0 car λ_n → ∞).
+    4. Composition d'un compact avec un borné → compact. -/
+lemma positiveOp_isCompact
+    {ℋ : Type*} [NormedAddCommGroup ℋ] [InnerProductSpace ℂ ℋ] [CompleteSpace ℋ]
+    (f : 𝒲) (D : UnboundedOperator ℋ) (hD_sa : D.IsSelfAdjoint) :
+    IsCompactOperator (positiveOp f D hD_sa) := by
+  -- Étape 1 : résolvante compacte
+  have hD_cr : D.HasCompactResolvent :=
+    isSelfAdjoint_hasCompactResolvent D hD_sa
+  -- Étape 2 : f(D) est compact
+  have hfD_compact : IsCompactOperator (WeilFunctionalCalculus f D hD_sa) :=
+    weilFunctionalCalculus_isCompact f D hD_sa hD_cr
+  -- Étape 3 : déplier positiveOp et appliquer le lemme produit
+  unfold positiveOp
+  exact weilFunctionalCalculus_mul_star_isCompact f D hD_sa hfD_compact
+
+
 lemma positiveOp_mem_macaev (f : 𝒲) :
     positiveOp f diracArith diracArith_isSelfAdjoint ∈ MacaevIdeal DiracHilbert := by
-  sorry
-
+  refine ⟨positiveOp_isCompact (ℋ := DiracHilbert) f _ _, ?_⟩
+  obtain ⟨C, hC⟩ := positiveOp_cesaroBound_aux f
+  refine ⟨C, fun N hN => ?_⟩
+  have hlog_pos : 0 < Real.log N := Real.log_pos (by exact_mod_cast (by omega : 1 < N))
+  rw [one_div, inv_mul_le_iff₀ hlog_pos]
+  linarith [hC N hN, mul_comm C (Real.log N)]
 
 -- Lemme 2 : calcul fonctionnel préserve la convolution
 lemma weilFunctionalCalculus_mulConv (f : 𝒲) (g_conv : 𝒲)

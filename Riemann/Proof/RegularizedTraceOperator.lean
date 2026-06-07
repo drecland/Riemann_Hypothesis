@@ -81,8 +81,21 @@ theorem regularizedTrace_positive
 de `f(D)f*(D)` issue de l'asymptotique de von Mangoldt sur les zéros.
 
 Pour `f ∈ 𝒲`, il existe une constante `K` telle que pour tout `n ≥ 2` :
-$$\mu_n(P_f) \le \frac{K}{n \log n}$$ -/
-lemma positiveOp_singularValues_decay
+$$\mu_n(P_f) \le \frac{K}{n \log n}$$
+
+**Minoration** : `K/(n log n) ≤ μ_n(P_f)`.
+    Utilisée pour montrer que `P_f ∉ ℒ¹(ℋ)` (non-trace-class). -/
+lemma positiveOp_singularValues_decay_lower
+    {ℋ : Type*} [NormedAddCommGroup ℋ] [InnerProductSpace ℂ ℋ] [CompleteSpace ℋ]
+    (f : 𝒲) (D : UnboundedOperator ℋ) (hD_sa : D.IsSelfAdjoint)
+    (hD_cr : D.HasCompactResolvent) :
+    ∃ K : ℝ, 0 < K ∧ ∀ n : ℕ, 2 ≤ n →
+      K / ((n : ℝ) * Real.log n) ≤ singularValues (positiveOp f D hD_sa) n := by
+  sorry
+
+/-- **Majoration** : `μ_n(P_f) ≤ K/(n log n)`.
+    Utilisée pour montrer que `P_f ∈ ℒ^(1,∞)(ℋ)` (idéal de Macaev). -/
+lemma positiveOp_singularValues_decay_upper
     {ℋ : Type*} [NormedAddCommGroup ℋ] [InnerProductSpace ℂ ℋ] [CompleteSpace ℋ]
     (f : 𝒲) (D : UnboundedOperator ℋ) (hD_sa : D.IsSelfAdjoint)
     (hD_cr : D.HasCompactResolvent) :
