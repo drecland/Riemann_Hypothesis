@@ -184,7 +184,6 @@ theorem dixmierTrace_positiveOp_eq_sum {f : 𝒲}
       = ∑' ρ : {z : ℂ // z ∈ (𝒵 : Set ℂ)},
           mellinTransform (f : ℝ → ℂ) ρ.val
             * mellinTransform (f : ℝ → ℂ) (1 - star ρ.val) := by
-
   calc (dixmierTrace
         (positiveOp f diracArith diracArith_isSelfAdjoint)
         (positiveOp_mem_macaev f)
@@ -201,5 +200,3 @@ theorem dixmierTrace_positiveOp_eq_sum {f : 𝒲}
           mellinTransform (f : ℝ → ℂ) ρ.val
             * mellinTransform (f : ℝ → ℂ) (1 - star ρ.val) :=
         step_spectral_sum_equality f g_conv hg_conv hsum
-
-#check dixmierTrace_eq_sum_eigenvalues
