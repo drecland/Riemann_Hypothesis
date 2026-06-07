@@ -87,7 +87,7 @@ notation "𝒲ₛ" => WeilSpaceSet
 /-! ## Lemmes auxiliaires pour l'équivalence A ↔ B -/
 /-- **Lemme 1** : `weilOp (toFun g) x = (deriv g) (log x)`
       pour `x > 0`. -/
-theorem WeilSpace.weilOp_toFun (g : 𝒲) {x : ℝ} (hx : 0 < x) :
+lemma WeilSpace.weilOp_toFun (g : 𝒲) {x : ℝ} (hx : 0 < x) :
     weilOp (WeilSpace.toFun g) x = deriv (g : ℝ → ℂ) (Real.log x) := by
   unfold weilOp WeilSpace.toFun
   have hx_ne : x ≠ 0 := ne_of_gt hx
@@ -110,7 +110,7 @@ theorem WeilSpace.weilOp_toFun (g : 𝒲) {x : ℝ} (hx : 0 < x) :
 /-- **Lemme 1 bis** : identité fonctionnelle
 `weilOp ∘ toFun g = toFun (deriv g)` sur `ℝ*₊`.
     Version nécessaire pour la récurrence. -/
-theorem WeilSpace.weilOp_toFun_eq (g : 𝒲) :
+lemma WeilSpace.weilOp_toFun_eq (g : 𝒲) :
     Set.EqOn (weilOp (WeilSpace.toFun g))
              (fun x => deriv (g : ℝ → ℂ) (Real.log x))
              (Set.Ioi 0) := by
@@ -122,7 +122,7 @@ theorem WeilSpace.weilOp_toFun_eq (g : 𝒲) :
 /-- **Lemme 2** : itération.
     `(weilOp^[m] (toFun g)) x = (iteratedDeriv m g) (log x)`
     pour `x > 0`. -/
-theorem WeilSpace.weilOp_iterate_toFun (m : ℕ) (g : 𝒲) {x : ℝ}
+lemma WeilSpace.weilOp_iterate_toFun (m : ℕ) (g : 𝒲) {x : ℝ}
     (hx : 0 < x) :
     (weilOp^[m] (WeilSpace.toFun g)) x =
       iteratedDeriv m (g : ℝ → ℂ) (Real.log x) := by
@@ -170,7 +170,7 @@ theorem WeilSpace.weilOp_iterate_toFun (m : ℕ) (g : 𝒲) {x : ℝ}
 
 
 /-- **Lemme 3** : `(log (eᵗ))^k = tᵏ` -/
-theorem Real.log_exp_pow (t : ℝ) (k : ℕ) :
+lemma Real.log_exp_pow (t : ℝ) (k : ℕ) :
     (Real.log (Real.exp t))^k = t^k := by
   rw [Real.log_exp]
 

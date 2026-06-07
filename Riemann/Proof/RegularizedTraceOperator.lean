@@ -17,6 +17,8 @@ variable {ℋ : Type*}
 [CompleteSpace ℋ]
 
 
+
+
 /-! ## Définition II.22 — Trace régularisée -/
 
 /-- **Idéal des opérateurs à trace** `ℒ¹(ℋ)`. -/
@@ -74,3 +76,16 @@ theorem regularizedTrace_positive
     0 ≤ (Trreg.toFun (positiveOp f D hD_sa) hPf_mem).re := by
   exact Trreg.preserves_positivity _ hPf_mem
     (positiveOp_isPositive f D hD_sa)
+
+/-- **Lemme préliminaire** — Décroissance individuelle des valeurs singulières
+de `f(D)f*(D)` issue de l'asymptotique de von Mangoldt sur les zéros.
+
+Pour `f ∈ 𝒲`, il existe une constante `K` telle que pour tout `n ≥ 2` :
+$$\mu_n(P_f) \le \frac{K}{n \log n}$$ -/
+lemma positiveOp_singularValues_decay
+    {ℋ : Type*} [NormedAddCommGroup ℋ] [InnerProductSpace ℂ ℋ] [CompleteSpace ℋ]
+    (f : 𝒲) (D : UnboundedOperator ℋ) (hD_sa : D.IsSelfAdjoint)
+    (hD_cr : D.HasCompactResolvent) :
+    ∃ K : ℝ, 0 < K ∧ ∀ n : ℕ, 2 ≤ n →
+      singularValues (positiveOp f D hD_sa) n ≤ K / ((n : ℝ) * Real.log n) := by
+  sorry

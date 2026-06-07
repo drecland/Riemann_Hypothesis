@@ -175,13 +175,10 @@ axiom diracArith_spectrum_eq_zeros :
 
 /-- **Lemme** — L'opérateur de Dirac arithmétique
     a une résolvante compacte. -/
-lemma diracArith_hasCompactResolvent
-    {ℋ : Type*}
-    [NormedAddCommGroup ℋ]
-    [InnerProductSpace ℂ ℋ]
-    [CompleteSpace ℋ] :
-    (diracArith).HasCompactResolvent := by
+lemma diracArith_hasCompactResolvent :
+    diracArith.HasCompactResolvent := by
   sorry
+
 
 /-- **Famille de vecteurs propres** indexée par `𝒵`.
 **Vecteur propre dans DiracHilbert** : le vecteur de base

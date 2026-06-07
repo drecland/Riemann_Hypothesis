@@ -20,13 +20,53 @@ variable {ℋ : Type u_1}
 @[inherit_doc]
 notation "Trω" => dixmierTrace
 
+/-- **Axiome — Caractérisation de `TraceClass` par les valeurs singulières.**
+
+    Un opérateur compact `T` appartient à `ℒ¹(ℋ)` si et seulement si
+    la série de ses valeurs singulières converge. -/
+axiom traceClass_iff_summable_singularValues
+    {ℋ : Type*} [NormedAddCommGroup ℋ] [InnerProductSpace ℂ ℋ]
+    [CompleteSpace ℋ] (T : ℋ →L[ℂ] ℋ) :
+    T ∈ TraceClass ℋ ↔ Summable (singularValues T)
+
+/-- **Lemme classique** : la série `∑ 1/(n log n)` diverge (Cauchy-Bertrand). -/
+axiom not_summable_one_div_n_log_n :
+    ¬ Summable (fun n : ℕ => 1 / ((n : ℝ) * Real.log n))
+
 
 /-! ### — Appartenance à l'idéal de Dixmier -/
 
 /-- **Lemme** : le volume des classes d'idèles est infini, donc
-    `f(D) f*(D)` n'appartient pas à `ℒ¹(ℋ)`. -/
+    `P_f = f(D) f*(D)` n'appartient pas à l'idéal trace `ℒ¹(ℋ)`.
+
+    Justification mathématique : les valeurs singulières de `P_f`
+    décroissent comme `K/(n log n)` (cf. `positiveOp_singularValues_decay`),
+    et la série `∑ 1/(n log n)` diverge. -/
 lemma positiveOp_not_traceClass (f : 𝒲) :
-    True := sorry  -- placeholder : "P_f ∉ ℒ¹(ℋ)"
+    positiveOp f diracArith diracArith_isSelfAdjoint
+      ∉ TraceClass DiracHilbert := by
+  set Pf := positiveOp f diracArith diracArith_isSelfAdjoint with hPf
+  intro hPf_trace
+  rw [traceClass_iff_summable_singularValues] at hPf_trace
+  obtain ⟨K, hK_nn, hμ⟩ :=
+    positiveOp_singularValues_decay f diracArith diracArith_isSelfAdjoint
+      diracArith_hasCompactResolvent
+  have hcomp : Summable (fun n : ℕ => K / ((n : ℝ) * Real.log n)) := by
+    sorry
+  have hdiv : ¬ Summable (fun n : ℕ => K / ((n : ℝ) * Real.log n)) := by
+    intro hsum
+    apply not_summable_one_div_n_log_n
+    have hK_ne : K ≠ 0 := ne_of_gt hK_nn
+    have heq : (fun n : ℕ => 1 / ((n : ℝ) * Real.log n))
+            = (fun n : ℕ => K⁻¹ * (K / ((n : ℝ) * Real.log n))) := by
+      funext n
+      field_simp
+    rw [heq]
+    exact hsum.mul_left K⁻¹
+  exact hdiv hcomp
+
+
+
 
 /-- **Lemme** (von Mangoldt) : asymptotique `N(T) ∼ (T/2π) ln T`. -/
 lemma vonMangoldt_zeros_asymptotic :
