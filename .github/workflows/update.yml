@@ -1,25 +1,23 @@
 name: Update Dependencies
 
 on:
-  # schedule:             # Sets a schedule to trigger the workflow
-  #   - cron: "0 8 * * *" # Every day at 08:00 AM UTC (see https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule)
   workflow_dispatch:    # Allows the workflow to be triggered manually via the GitHub interface
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: github-pages  # Add this line
-    
+    environment: github-pages  # <-- Cet environnement est déjà présent
+
     steps:
       - uses: actions/checkout@v5
       - uses: leanprover/lean-action@v1
       - uses: leanprover-community/docgen-action@v1
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'docs'
-      
+
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
         uses: actions/deploy-pages@v4
@@ -31,7 +29,6 @@ jobs:
       contents: write      # Grants permission to push changes to the repository
       issues: write        # Grants permission to create or update issues
       pull-requests: write # Grants permission to create or update pull requests
-    needs: check-for-updates
     if: ${{ needs.check-for-updates.outputs.is-update-available == 'true' }}
     strategy: # Runs for each update discovered by the `check-for-updates` job.
       max-parallel: 1 # Ensures that the PRs/issues are created in order.

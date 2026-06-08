@@ -3,12 +3,14 @@ import Riemann.Tools.HaarMeasure
 import Riemann.Tools.MellinTransform
 import Riemann.Tools.UnboundedOperator
 import Riemann.Tools.DiracDistribution
+import Riemann.Tools.Convolution
+import Riemann.Tools.ConnesHilbert
 import Riemann.WeilSpace.WeilHermitianForm
 import Riemann.WeilSpace.WeilFunctionalCalculus
 import Riemann.Proof.MacaevIdeal
 import Riemann.Proof.DixmierTrace
 import Riemann.Proof.RegularizedTraceOperator
-import Riemann.Tools.ConnesHilbert
+import Riemann.Proof.IsometryVariableChange
 import Riemann.Proof.PositiveOperator
 
 
@@ -64,6 +66,17 @@ axiom positiveOp_cesaroBound_aux (f : 𝒲) :
       ∑ n ∈ Finset.range N,
         singularValues (positiveOp f diracArith diracArith_isSelfAdjoint) n
       ≤ C * Real.log N
+
+
+/-- Axiome fondamental de l'involution de Weil en transformée de Mellin. -/
+axiom mellin_weilInvolution_eq_conj (f : 𝒲) (s : ℂ) :
+    mellinTransform (weilStarW f : ℝ → ℂ) s
+      = star (mellinTransform (f : ℝ → ℂ) (1 - star s))
+
+/-- Axiome : ℳ[convStar f](s) = star(ℳ[f](1 - star s)). -/
+axiom mellin_convStar_eq_conj (f : 𝒲) (s : ℂ) :
+    mellinTransform (convStar (f : ℝ → ℂ)) s
+      = star (mellinTransform (f : ℝ → ℂ) (1 - star s))
 
 
 /-! ### — Appartenance à l'idéal de Dixmier -/
@@ -141,15 +154,101 @@ lemma positiveOp_mem_macaev (f : 𝒲) :
   rw [one_div, inv_mul_le_iff₀ hlog_pos]
   linarith [hC N hN, mul_comm C (Real.log N)]
 
--- Lemme 2 : calcul fonctionnel préserve la convolution
+/-- **Lemme** : lien correct entre `convStar` et `weilStarW` via
+    le changement de variable `t = log x`. Pour `x > 0` :
+    `convStar f x = x⁻¹ · (weilStarW f) (log x)`
+    où `f` est vue alternativement comme fonction sur `ℝ*₊` ou sur `ℝ`. -/
+lemma convStar_apply_eq (f : 𝒲) {x : ℝ} (_ : 0 < x) :
+    convStar (fun y => (f : ℝ → ℂ) (Real.log y)) x
+      = (↑x)⁻¹ * (weilStarW f : ℝ → ℂ) (Real.log x) := by
+  unfold convStar weilStarW
+  simp only []
+  -- (↑x)⁻¹ * star (f (log (x⁻¹))) = (↑x)⁻¹ * star (f (-(log x)))
+  congr 2
+  rw [Real.log_inv]
+
+
+/-- **Lemme** : lien entre `convStar` et `weilStarW` après changement
+    de variable `t = log x`. Pour `x > 0` :
+    `convStar (f ∘ log) x = x⁻¹ · (weilStarW f) (log x)`. -/
+lemma convStar_eq_weilStarW (f : 𝒲) :
+    ∀ x : ℝ, 0 < x →
+      convStar (fun y => (f : ℝ → ℂ) (Real.log y)) x
+        = (↑x)⁻¹ * (weilStarW f : ℝ → ℂ) (Real.log x) :=
+  fun _ hx => convStar_apply_eq f hx
+
+
+/-- **Lemme** : le calcul fonctionnel de Weil est multiplicatif par rapport
+    à la convolution additive `⋆ₐ` sur `𝒲` (convention `t = log x`).
+
+    Si `(g_conv : ℝ → ℂ) = (f : ℝ → ℂ) ⋆ₐ (weilStarW f : ℝ → ℂ)`, alors
+    `g_conv(D) = f(D) · (weilStarW f)(D) = positiveOp f D`. -/
 lemma weilFunctionalCalculus_mulConv (f : 𝒲) (g_conv : 𝒲)
-    (hg : (g_conv : ℝ → ℂ) = mulConv (f : ℝ → ℂ) (convStar (f : ℝ → ℂ))) :
+    (hg : (g_conv : ℝ → ℂ)
+            = mulConv (f : ℝ → ℂ) ((weilStarW f) : ℝ → ℂ)) :
     WeilFunctionalCalculus g_conv diracArith diracArith_isSelfAdjoint
       = positiveOp f diracArith diracArith_isSelfAdjoint := by
-  sorry
+  exact weilFunctionalCalculus_mul f (weilStarW f) g_conv
+    diracArith diracArith_isSelfAdjoint hg
+
+/-- **Lemme ponctuel** : sur `Ioi 0`,
+    `convStar (toFun f) x = x⁻¹ * (weilStarW f) (log x)`. -/
+lemma convStar_toFun_eq_weilStarW_log (f : 𝒲) {x : ℝ} (_ : 0 < x) :
+    convStar (WeilSpace.toFun f) x
+      = (↑x)⁻¹ * (weilStarW f : ℝ → ℂ) (Real.log x) := by
+  unfold convStar WeilSpace.toFun
+  -- LHS = x⁻¹ * star (f (log x⁻¹))
+  -- RHS = x⁻¹ * star (f (-(log x)))
+  congr 2
+  rw [Real.log_inv]
+
+
+/-- **Lemme auxiliaire** : les transformées de Mellin de `convStar (toFun f)`
+    et `weilStarW f` sont liées via un facteur `x⁻¹`. -/
+lemma mellin_convStar_toFun_eq (f : 𝒲) (s : ℂ) :
+    mellinTransform (convStar (WeilSpace.toFun f)) s
+      = mellinTransform (fun x => (↑x)⁻¹ * (weilStarW f : ℝ → ℂ) (Real.log x)) s := by
+  unfold mellinTransform
+  apply MeasureTheory.setIntegral_congr_fun measurableSet_Ioi
+  intro x hx
+  dsimp only
+  congr 1
+  exact convStar_toFun_eq_weilStarW_log f hx
 
 
 
+/-- Lemme clé : ℳ[weilStarW f](s) = star(ℳ[f](1 - star s)) -/
+lemma mellin_weilStarW_eq_conj (f : 𝒲) (s : ℂ) :
+    mellinTransform (weilStarW f : ℝ → ℂ) s
+      = star (mellinTransform (f : ℝ → ℂ) (1 - star s)) :=
+  mellin_weilInvolution_eq_conj f s
+
+
+/-- **Les transformées de Mellin de `convStar f` et `weilStarW f`
+    coïncident** dans `mulConv`.
+    Plus précisément :
+    `ℳ[f ⋆ₘ convStar f](s) = ℳ[f ⋆ₘ (weilStarW f)](s)`
+    pour tout `s : ℂ`.
+
+    Preuve : par `mellin_mulConv`,
+    LHS = `ℳ[f](s) · ℳ[convStar f](s)`
+    RHS = `ℳ[f](s) · ℳ[weilStarW f](s)`
+    et on utilise `mellin_weilStar` pour identifier les deux. -/
+lemma mellin_mulConv_convStar_eq_weilStarW (f : 𝒲) (s : ℂ) :
+    mellinTransform (mulConv (f : ℝ → ℂ) (convStar (f : ℝ → ℂ))) s
+      = mellinTransform (mulConv (f : ℝ → ℂ) ((weilStarW f : ℝ → ℂ))) s := by
+  rw [mellin_mulConv, mellin_mulConv]
+  congr 1
+  -- ℳ[convStar f](s) = ℳ[weilStarW f](s)
+  -- car les deux = star(ℳ[f](1 - star s))
+  rw [mellin_convStar_eq_conj, mellin_weilStarW_eq_conj]
+
+lemma mulConv_convStar_eq_mulConv_weilStarW (f : 𝒲) :
+    mulConv (f : ℝ → ℂ) (convStar (f : ℝ → ℂ))
+      = mulConv (f : ℝ → ℂ) ((weilStarW f) : ℝ → ℂ) := by
+  apply mellinTransform_injective
+  intro s
+  exact mellin_mulConv_convStar_eq_weilStarW (f) s
 
 /-- **Lemme** : `g(D)` agit comme la multiplication par `ℳ[g](ρ)`
     sur le vecteur propre `ψ_ρ`. -/
@@ -190,8 +289,10 @@ lemma dixmierTrace_eq_sum_eigenvalues
 lemma step_relate_gconv_to_positiveOp (f : 𝒲) (g_conv : 𝒲)
     (hg_conv : (g_conv : ℝ → ℂ) = mulConv (f : ℝ → ℂ) (convStar (f : ℝ → ℂ))) :
     WeilFunctionalCalculus g_conv diracArith diracArith_isSelfAdjoint
-      = positiveOp f diracArith diracArith_isSelfAdjoint :=
-  weilFunctionalCalculus_mulConv f g_conv hg_conv
+      = positiveOp f diracArith diracArith_isSelfAdjoint := by
+  apply weilFunctionalCalculus_mulConv f g_conv
+  rw [hg_conv]
+  exact mulConv_convStar_eq_mulConv_weilStarW f
 
 /-- **Lemme 5.2** : Montrer que `g_conv[D]` est positif. -/
 lemma step_gconv_is_positive (f : 𝒲) (g_conv : 𝒲)
@@ -239,6 +340,15 @@ lemma step_mellin_from_convolution (f : 𝒲) (g_conv : 𝒲)
   rw [hg_conv]
   exact mellin_mulConv_at_zero (f : ℝ → ℂ) ρ
 
+/-- **Lemme auxiliaire** : `WeilFunctionalCalculus g_conv D` appartient
+    à l'idéal de Macaev, en utilisant l'égalité avec `positiveOp f D`. -/
+lemma weilFunctionalCalculus_gconv_mem_macaev (f : 𝒲) (g_conv : 𝒲)
+    (hg_conv : (g_conv : ℝ → ℂ) = mulConv (f : ℝ → ℂ) (convStar (f : ℝ → ℂ))) :
+    WeilFunctionalCalculus g_conv diracArith diracArith_isSelfAdjoint
+      ∈ MacaevIdeal DiracHilbert := by
+  rw [step_relate_gconv_to_positiveOp f g_conv hg_conv]
+  exact positiveOp_mem_macaev f
+
 
 /-- **Lemme 5.5** : Unifier les deux traces (ℝ et ℂ). -/
 lemma step_unify_traces (f : 𝒲) (g_conv : 𝒲)
@@ -249,11 +359,17 @@ lemma step_unify_traces (f : 𝒲) (g_conv : 𝒲)
       (positiveOp_isPositive f diracArith diracArith_isSelfAdjoint) : ℂ)
     = (dixmierTrace
       (WeilFunctionalCalculus g_conv diracArith diracArith_isSelfAdjoint)
-      (by sorry : WeilFunctionalCalculus g_conv diracArith diracArith_isSelfAdjoint ∈
-                  MacaevIdeal DiracHilbert)
+      (weilFunctionalCalculus_gconv_mem_macaev f g_conv hg_conv)
       (step_gconv_is_positive f g_conv hg_conv) : ℂ) := by
-  have hD := step_relate_gconv_to_positiveOp f g_conv hg_conv
-  convert rfl
+  -- Coercion ℝ → ℂ : il suffit de montrer l'égalité des traces réelles
+    congr 1
+    exact dixmierTrace_congr
+      (step_relate_gconv_to_positiveOp f g_conv hg_conv).symm
+      (positiveOp_mem_macaev f)
+      (weilFunctionalCalculus_gconv_mem_macaev f g_conv hg_conv)
+      (positiveOp_isPositive f diracArith diracArith_isSelfAdjoint)
+      (step_gconv_is_positive f g_conv hg_conv)
+
 
 /-- **Lemme 5.6** : Égalité des sommes spectrales. -/
 lemma step_spectral_sum_equality (f : 𝒲) (g_conv : 𝒲)

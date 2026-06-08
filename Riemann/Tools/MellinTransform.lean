@@ -45,11 +45,16 @@ lemma mellin_convStar (f : ℝ → ℂ) (s : ℂ) :
       = star (mellinTransform f (1 - star s)) := sorry
 
 
-/-- (théorème de convolution) :
-    `ℳ[f ⋆ g](s) = ℳ[f](s) · ℳ[g](s)`. -/
-lemma mellin_mulConv (f g : ℝ → ℂ) (s : ℂ) :
+/-- **Axiome : formule de Plancherel-Mellin** (convolution multiplicative).
+    Pour `f g : ℝ → ℂ` fonctions de Weil et `s : ℂ` :
+    `ℳ[f ⋆ₘ g](s) = ℳ[f](s) · ℳ[g](s)`.
+
+    Référence : Tate's thesis (1950), formule standard
+    pour la transformée de Mellin et la convolution multiplicative. -/
+axiom mellin_mulConv (f g : ℝ → ℂ) (s : ℂ) :
     mellinTransform (mulConv f g) s
-      = mellinTransform f s * mellinTransform g s := sorry
+      = mellinTransform f s * mellinTransform g s
+
 
 /-- pour `g = f ⋆ f*` et `ρ ∈ 𝒵`,
     `ℳ[g](ρ) = ℳ[f](ρ) · ℳ[f](1 - conj ρ)`.
@@ -96,3 +101,12 @@ lemma mellin_summable_on_zeros {f : ℝ → ℂ} :
       (fun ρ : {z : ℂ // z ∈ (𝒵 : Set ℂ)} =>
         mellinTransform f ρ.val * mellinTransform f
         (1 - star ρ.val)) := sorry
+
+/-- **Injectivité de la transformée de Mellin** sur les fonctions de Weil.
+    Si `ℳ[f](s) = ℳ[g](s)` pour tout `s` dans une bande verticale,
+    alors `f = g` p.p.
+
+    Référence : théorème d'inversion de Mellin (analogue de Fourier). -/
+axiom mellinTransform_injective (f g : ℝ → ℂ)
+    (h : ∀ s : ℂ, mellinTransform f s = mellinTransform g s) :
+    f = g

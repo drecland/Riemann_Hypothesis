@@ -60,3 +60,14 @@ lemma star_mul_real_mul_star (a c : ℂ) (r : ℝ) :
     star (a * (↑r * star c)) = star a * (↑r * c) := by
   simp [star_mul, RCLike.star_def]
   ring
+
+/-- **Convolution additive** sur `ℝ` (mesure de Lebesgue) :
+    `(f ∗ g)(t) = ∫_ℝ f(t - s) · g(s) ds`.
+
+    Reliée à `mulConv` via l'isométrie `J(f) = f ∘ exp` :
+    `J(f ⋆ₘ g) = J(f) ∗ J(g)`. -/
+noncomputable def addConv (f g : ℝ → ℂ) : ℝ → ℂ :=
+  fun t => ∫ s : ℝ, f (t - s) * g s
+
+@[inherit_doc]
+infixl:70 " ⋆ₐ " => addConv

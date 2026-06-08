@@ -50,3 +50,28 @@ lemma weilFunctionalCalculus_mul_star_isCompact
       ((WeilFunctionalCalculus f D hD_sa) *
        (WeilFunctionalCalculus (weilStarW f) D hD_sa)) := by
   sorry
+
+/-- **Lemme** : le calcul fonctionnel de Weil est multiplicatif par
+    rapport à la convolution multiplicative `⋆ₘ`.
+
+    Plus précisément, si `h = f ⋆ₘ g` dans `𝒲` (égalité au niveau des
+    fonctions `ℝ → ℂ` sous-jacentes), alors au niveau des opérateurs :
+    `h(D) = f(D) · g(D)`.
+
+    Justification mathématique :
+    1. La transformée de Mellin échange convolution multiplicative et
+       produit ponctuel : `ℳ[f ⋆ₘ g](s) = ℳ[f](s) · ℳ[g](s)`.
+    2. Le calcul fonctionnel borélien (von Neumann) est un morphisme
+       d'algèbres : pour `φ, ψ` boréliennes bornées,
+       `(φ · ψ)(D) = φ(D) · ψ(D)`.
+    3. Comme `WeilFunctionalCalculus f D = ℳ[f](½ I + i D)`, la
+       multiplicativité Mellin se transporte en multiplicativité des
+       opérateurs. -/
+lemma weilFunctionalCalculus_mul
+    {ℋ : Type*} [NormedAddCommGroup ℋ] [InnerProductSpace ℂ ℋ] [CompleteSpace ℋ]
+    (f g h : 𝒲) (D : UnboundedOperator ℋ) (hD_sa : D.IsSelfAdjoint)
+    (hh : (h : ℝ → ℂ) = mulConv (f : ℝ → ℂ) (g : ℝ → ℂ)) :
+    WeilFunctionalCalculus h D hD_sa
+      = (WeilFunctionalCalculus f D hD_sa) *
+        (WeilFunctionalCalculus g D hD_sa) := by
+  sorry
